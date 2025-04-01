@@ -1,5 +1,4 @@
 // src/types/products.ts
-
 export interface Product {
     id: number;
     title: string;
@@ -8,6 +7,8 @@ export interface Product {
     category: string;
     image: string;
     stock: number;
+    rating?: number;
+    createdAt?: Date;
 };
 
 export interface AdminContextType {

@@ -1,10 +1,10 @@
 import { ProductCard } from '../components/ProductCard';
 import { SearchBar } from '../components/SearchBar';
-import {useEffect, useState} from 'react';
-import {Product} from "../types/products.ts";
+import { useEffect, useState } from 'react';
+import { Product } from "../types/products.ts";
 import { fetchProducts } from '../services/api';
-import {useSearchParams} from "react-router-dom";
-import {Pagination} from "../components/Pagination.tsx";
+import { useSearchParams } from "react-router-dom";
+import { Pagination } from "../components/Pagination.tsx";
 
 export const Home = () => {
     // Mock product data
@@ -28,7 +28,8 @@ export const Home = () => {
                 const { data, totalPages } = await fetchProducts({
                     page,
                     category,
-                    query: searchQuery
+                    query: searchQuery,
+                    source: 'home'  // Added the source parameter
                 });
                 setProducts(data);
                 setTotalPages(totalPages);

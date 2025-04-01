@@ -28,7 +28,8 @@ export const Products = () => {
                 const { data, totalPages } = await fetchProducts({
                     page,
                     category,
-                    query: searchQuery
+                    query: searchQuery,
+                    source: 'products'  // Added the source parameter
                 });
                 setProducts(data);
                 setTotalPages(totalPages);
