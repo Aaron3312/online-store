@@ -5,17 +5,17 @@ type PaginationProps = {
     currentPage: number;
     totalPages: number;
     maxVisible?: number; // Maximum visible page buttons
+    onPageChange?: (page: number) => void;
 };
 
 export const Pagination = ({
                                currentPage,
                                totalPages,
-                               maxVisible = 5
+                               maxVisible = 5,
+                               onPageChange
                            }: PaginationProps) => {
     const [searchParams] = useSearchParams();
     const [pages, setPages] = useState<number[]>([]);
-
-
 
     useEffect(() => {
         // Calculate visible page range
@@ -49,6 +49,7 @@ export const Pagination = ({
                 <li className="pagination-prev">
                     <Link
                         to={getPageUrl(Math.max(1, currentPage - 1))}
+                        onClick={() => onPageChange?.(currentPage - 1)}
                         className={`pagination-link ${currentPage === 1 ? 'disabled' : ''}`}
                         aria-disabled={currentPage === 1}
                     >
@@ -60,7 +61,7 @@ export const Pagination = ({
                 {!pages.includes(1) && (
                     <>
                         <li className="pagination-item">
-                            <Link to={getPageUrl(1)} className="pagination-link">
+                            <Link to={getPageUrl(1)} className="pagination-link" onClick={() => onPageChange?.(1)}>
                                 1
                             </Link>
                         </li>
@@ -75,6 +76,7 @@ export const Pagination = ({
                             to={getPageUrl(page)}
                             className={`pagination-link ${currentPage === page ? 'active' : ''}`}
                             aria-current={currentPage === page ? 'page' : undefined}
+                            onClick={() => onPageChange?.(page)}
                         >
                             {page}
                         </Link>
@@ -88,7 +90,7 @@ export const Pagination = ({
                             <li className="ellipsis">...</li>
                         )}
                         <li className="pagination-item">
-                            <Link to={getPageUrl(totalPages)} className="pagination-link">
+                            <Link to={getPageUrl(totalPages)} className="pagination-link" onClick={() => onPageChange?.(totalPages)}>
                                 {totalPages}
                             </Link>
                         </li>
@@ -99,6 +101,7 @@ export const Pagination = ({
                 <li className="pagination-next">
                     <Link
                         to={getPageUrl(Math.min(totalPages, currentPage + 1))}
+                        onClick={() => onPageChange?.(currentPage + 1)}
                         className={`pagination-link ${currentPage === totalPages ? 'disabled' : ''}`}
                         aria-disabled={currentPage === totalPages}
                     >

@@ -111,42 +111,39 @@ const products = [
   } as Product
 ];
 
-// Function to get all products and initialize if needed
-export const getProducts = async (source: string): Promise<Product[]> => {
+// Function to initialize products in Firestore
+export const initializeProducts = async () => {
   try {
     const productsCollection = collection(db, "products");
     const snapshot = await getDocs(productsCollection);
-    
-    // If no products and source is 'home', initialize with sample products
-    if(snapshot.size === 0 && source === 'home') {
-      try {
-        for (let i = 0; i < products.length; i++) {
-          // Add sequential numeric IDs
-          const productWithId = {
-            ...products[i],
-            id: i + 1  // Use numeric IDs starting from 1
-          };
-          
-          await addDoc(collection(db, "products"), productWithId);
-          console.log(`Added: ${productWithId.title}`);
-        }
-        console.log("All products added successfully.");
-        return products.map((p, index) => ({ ...p, id: index + 1 }));
-      } catch (error) {
-        console.error("Error adding products: ", error);
-        throw error;
+    if (snapshot.size === 0) {
+      for (const product of products) {
+        await addDoc(productsCollection, product);
+        console.log(`Added: ${product.title}`);
       }
+      console.log("All products added successfully.");
     }
-    
-    // Convert Firestore documents to Product objects with numeric IDs
-    return snapshot.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        ...data,
-        id: data.id, // Use the numeric ID stored in the document
-        _firestoreId: doc.id // Store the Firestore document ID as a metadata field
-      } as Product;
-    });
+  } catch (error) {
+    console.error("Error initializing products: ", error);
+  }
+};
+
+// Function to get all products
+export const getProducts = async (): Promise<Product[]> => {
+  try {
+    const productsCollection = collection(db, "products");
+    const snapshot = await getDocs(productsCollection);
+    return snapshot.docs.map(doc => ({
+      id: parseInt(doc.id),
+      title: doc.data().title,
+      description: doc.data().description,
+      price: doc.data().price,
+      category: doc.data().category,
+      image: doc.data().image,
+      stock: doc.data().stock,
+      rating: doc.data().rating,
+      createdAt: doc.data().createdAt
+    })) as Product[];
   } catch (error) {
     console.error("Error fetching products:", error);
     throw error;
@@ -161,47 +158,47 @@ export const fetchProducts = async (params: {
   query?: string;
   source: string;
 }): Promise<ProductsResponse> => {
-  const perPage = params.perPage || 20;
-  const startIndex = (params.page - 1) * perPage;
-  
-  // Get all products
-  const allProducts = await getProducts(params.source);
-  
-  // Filter products by category if specified
-  let filteredProducts = [...allProducts];
-  if (params.category) {
-    filteredProducts = filteredProducts.filter(
-      p => p.category.toLowerCase() === params.category?.toLowerCase()
-    );
+  try {
+    const allProducts = await getProducts();
+    
+    // Filter by category if provided
+    let filteredProducts = allProducts;
+    if (params.category) {
+      filteredProducts = filteredProducts.filter(
+        product => product.category.toLowerCase() === params.category.toLowerCase()
+      );
+    }
+
+    // Filter by search query if provided
+    if (params.query) {
+      const query = params.query.toLowerCase();
+      filteredProducts = filteredProducts.filter(
+        product => 
+          product.title.toLowerCase().includes(query) ||
+          product.description.toLowerCase().includes(query)
+      );
+    }
+
+    // Calculate pagination
+    const perPage = params.perPage || 10;
+    const start = (params.page - 1) * perPage;
+    const end = start + perPage;
+    const paginatedProducts = filteredProducts.slice(start, end);
+
+    return {
+      data: paginatedProducts,
+      totalPages: Math.ceil(filteredProducts.length / perPage),
+      currentPage: params.page
+    } as ProductsResponse;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw error;
   }
-  
-  // Filter by search query if specified
-  if (params.query) {
-    const query = params.query.toLowerCase();
-    filteredProducts = filteredProducts.filter(
-      p => p.title.toLowerCase().includes(query) || 
-           p.description.toLowerCase().includes(query)
-    );
-  }
-  
-  // Calculate pagination
-  const totalItems = filteredProducts.length;
-  const totalPages = Math.ceil(totalItems / perPage);
-  const paginatedProducts = filteredProducts.slice(
-    startIndex,
-    startIndex + perPage
-  );
-  
-  return {
-    data: paginatedProducts,
-    totalPages,
-    currentPage: params.page
-  };
 };
 
 // Utility function for single product fetch
 export const fetchProductById = async (id: number): Promise<Product | undefined> => {
-  const allProducts = await getProducts('detail');
+  const allProducts = await getProducts();
   return allProducts.find(p => p.id === id);
 };
 
@@ -209,7 +206,7 @@ export const fetchProductById = async (id: number): Promise<Product | undefined>
 export const addProduct = async (product: Omit<Product, 'id'>): Promise<number> => {
   try {
     // Get the current highest ID
-    const allProducts = await getProducts('admin');
+    const allProducts = await getProducts();
     const maxId = allProducts.reduce((max, p) => Math.max(max, p.id || 0), 0);
     
     // Create new product with incremented ID

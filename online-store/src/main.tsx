@@ -5,7 +5,10 @@ import './styles.css';
 import {CartProvider} from "./context/CartContext.tsx";
 import {OrderProvider} from "./context/OrderContext.tsx";
 import {AdminProvider} from "./context/AdminContext.tsx";
+import {initializeProducts} from "./services/api";
 
+// Initialize products in Firestore
+await initializeProducts();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
