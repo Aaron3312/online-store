@@ -1,10 +1,14 @@
 import { Link } from 'react-router-dom';
 import { DarkModeToggle } from './DarkModeToggle';
 import { useState } from 'react'; //import added to handle the menu state
+import { useAuth } from '../context/AuthContext';
+import {LoginButton} from "../components/LoginButton.tsx";
+import {LogoutButton} from "../components/LogoutButton.tsx";
 import logo from "../assets/e-shop.png"; // Added logo import
 
 export const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false); //constant added to handle the menu toggle
+    const {user,role,displayName} = useAuth();
 
     return (
         <nav className="navbar">
@@ -37,12 +41,33 @@ export const Navbar = () => {
                         Cart <span className="cart-count">(0)</span>
                     </Link>
                     <Link to="/orders" onClick={() => setIsMenuOpen(false)}>Orders</Link>
-                    <Link to="/admin" onClick={() => setIsMenuOpen(false)}>Admin</Link>
-
-                    <div className="navbar-actions">
-                        <DarkModeToggle/>
-                        <button className="login-button" onClick={() => setIsMenuOpen(false)}>Login</button>
-                    </div>
+                    {role == 'admin' ?
+ <Link to="/admin" onClick={() => setIsMenuOpen(false)}>Admin</Link>
+ :
+ <div></div>
+                    }
+<div className="navbar-actions">
+ <DarkModeToggle/>
+</div>
+<div className="navbar-actions">
+ {user ?
+ <div>
+ <Link to="/">Welcome {displayName}</Link>
+ </div>
+ :<div/>
+ }
+</div>
+<div className="navbar-actions">
+ {user ?
+ <div>
+ <LogoutButton/>
+ </div>
+ :
+ <div>
+ <LoginButton/>
+ </div>
+ }
+</div>
                 </div>
             </div>
         </nav>

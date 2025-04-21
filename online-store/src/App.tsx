@@ -10,6 +10,7 @@ import { Admin } from './pages/Admin';
 import './App.css';
 import {ReactNode} from "react";
 import {Products} from "./pages/Products.tsx";
+import {AdminRoute} from "./components/AdminRoute.tsx";
 
 export default function App() {
     return (
@@ -21,8 +22,11 @@ export default function App() {
                 <Route path="/cart" element={<Cart /> as ReactNode} />
                 <Route path="/checkout" element={<Checkout /> as ReactNode} />
                 <Route path="/orders" element={<Orders /> as ReactNode} />
-                <Route path="/admin" element={<Admin /> as ReactNode} />
-                <Route path="/products" element={<Products />} />
+                <Route path="/admin" element={
+ <AdminRoute>
+ <Admin />
+ </AdminRoute>
+} />                <Route path="/products" element={<Products />} />
             </Routes>
             <Footer />
         </Router>

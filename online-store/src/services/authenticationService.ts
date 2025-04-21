@@ -4,7 +4,8 @@ import {
     signInWithEmailAndPassword,
     signInWithPopup,
     signOut,
-    User
+    User,
+    getAuth 
   } from "firebase/auth";
   import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
   import { auth, db } from "./firebaseConfig.ts";
