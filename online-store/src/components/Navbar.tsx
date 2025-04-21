@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { DarkModeToggle } from './DarkModeToggle';
-import {useState} from 'react'; //import added to handle the menu state
+import { useState } from 'react'; //import added to handle the menu state
+import logo from "../assets/e-shop.png"; // Added logo import
 
 export const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false); //constant added to handle the menu toggle
@@ -9,7 +10,10 @@ export const Navbar = () => {
         <nav className="navbar">
             <div className="container">
                 <div className="navbar-brand">
-                    <Link to="/">E-Shop</Link>
+                    <Link to="/">
+                        <img src={logo as string} alt="E-Shop Logo" className="navbar-logo" />
+                        <span>E-Shop</span>
+                    </Link>
                     {/* Hamburger button for mobile */}
                     <button
                         className="hamburger"
@@ -24,7 +28,10 @@ export const Navbar = () => {
                 {/* Collapsable menu for mobile/Fixed for Desktop */}
                 <div className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
 
-                    <Link to="/" className="navbar-home" onClick={() => setIsMenuOpen(false)}>E-Shop</Link>
+                    <Link to="/" className="navbar-home" onClick={() => setIsMenuOpen(false)}>
+                        <img src={logo as string} alt="E-Shop Logo" className="navbar-logo"/>
+                        <span>E-Shop</span>
+                    </Link>
                     <Link to="/products" onClick={() => setIsMenuOpen(false)}>Products</Link>
                     <Link to="/cart" onClick={() => setIsMenuOpen(false)}>
                         Cart <span className="cart-count">(0)</span>

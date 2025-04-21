@@ -7,7 +7,7 @@ import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
 import { Orders } from './pages/Orders';
 import { Admin } from './pages/Admin';
-import './styles.css';
+import './App.css';
 import {ReactNode} from "react";
 import {Products} from "./pages/Products.tsx";
 

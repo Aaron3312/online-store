@@ -1,3 +1,4 @@
+// Products.tsx
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ProductCard } from '../components/ProductCard';
@@ -5,7 +6,7 @@ import { SearchBar } from '../components/SearchBar';
 import { FilterSidebar } from '../components/FilterSidebar';
 import { Pagination } from '../components/Pagination';
 import { Product } from '../types/products';
-import { fetchProducts } from '../services/api';
+import { fetchProducts } from '../services/productService';
 
 export const Products = () => {
     const [searchParams] = useSearchParams();
@@ -29,12 +30,13 @@ export const Products = () => {
                     page,
                     category,
                     query: searchQuery,
-                    source: 'products'  // Added the source parameter
+                    source: 'products'
                 });
                 setProducts(data);
                 setTotalPages(totalPages);
             } catch (err) {
-                setError('Failed to load products. Please try again later.');
+                const errorMessage = err instanceof Error ? err.message : String(err);
+                setError('Failed to load products: ' + errorMessage);
                 console.error(err);
             } finally {
                 setLoading(false);
@@ -44,8 +46,20 @@ export const Products = () => {
         loadProducts();
     }, [page, category, searchQuery]);
 
+    const resetFilters = () => {
+        window.location.href = '/products';
+    };
+
     if (error) {
-        return <div className="error-message">{error}</div>;
+        return (
+            <div className="error-container">
+                <h2>Error</h2>
+                <p>{error}</p>
+                <button onClick={() => window.location.reload()} className="retry-button">
+                    Try Again
+                </button>
+            </div>
+        );
     }
 
     return (
@@ -60,16 +74,22 @@ export const Products = () => {
                     <button
                         className="mobile-filter-button"
                         onClick={() => setShowMobileFilters(!showMobileFilters)}
+                        aria-expanded={showMobileFilters}
+                        aria-controls="filter-container"
                     >
                         {showMobileFilters ? 'Hide Filters' : 'Show Filters'}
                     </button>
                 </div>
 
                 <div className="products-layout">
-                    <div className={`filter-container ${showMobileFilters ? 'mobile-visible' : ''}`}>
+                    <div 
+                        id="filter-container"
+                        className={`filter-container ${showMobileFilters ? 'mobile-visible' : ''}`}
+                    >
                         <button
                             className="close-mobile-filters"
                             onClick={() => setShowMobileFilters(false)}
+                            aria-label="Close filters"
                         >
                             &times;
                         </button>
@@ -81,25 +101,28 @@ export const Products = () => {
 
                     <main className="products-grid-container">
                         {loading ? (
-                            <div className="loading-spinner">Loading...</div>
+                            <div className="loading-container">
+                                <div className="loading-spinner"></div>
+                                <p>Loading products...</p>
+                            </div>
                         ) : products.length > 0 ? (
                             <>
                                 <div className="products-grid">
                                     {products.map(product => (
-                                        <ProductCard key={product.id} product={product}/>
+                                        <ProductCard key={product.id} product={product} />
                                     ))}
                                 </div>
                                 <Pagination
                                     currentPage={page}
                                     totalPages={totalPages}
-                                    maxVisible={10}
+                                    maxVisible={5}
                                 />
                             </>
                         ) : (
                             <div className="no-results">
                                 <p>No products found matching your criteria.</p>
                                 <button
-                                    onClick={() => window.location.href = '/products'}
+                                    onClick={resetFilters}
                                     className="reset-filters"
                                 >
                                     Reset Filters

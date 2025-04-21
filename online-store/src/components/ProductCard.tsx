@@ -29,13 +29,17 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 </h3>
 
                 <div className="product-footer">
-                    <RatingStars rating={product.rating} />
                     <div className="price-container">
                         <span className="product-price">${product.price.toFixed(2)}</span>
-                        <button className="add-to-cart" aria-label={`Add ${product.title} to cart`}>
-                            +
-                        </button>
                     </div>
+                </div>
+                <div className="product-footer">
+                    <RatingStars rating={product.rating as number}/>
+                </div>
+                <div className="product-footer">
+                    <button className="add-to-cart" aria-label={`Add ${product.title} to cart`}>
+                        Add to Cart
+                    </button>
                 </div>
             </div>
         </div>

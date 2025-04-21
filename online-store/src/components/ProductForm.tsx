@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import {Product} from "../types/products.ts";
+import { db } from '../services/firebaseConfig';
+
 
 type ProductFormProps = {
     product?: {
