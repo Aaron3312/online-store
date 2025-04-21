@@ -1,9 +1,16 @@
-import { Product } from '../types/products.ts'
+import { Product } from '../types/products.ts';
+import { Link } from "react-router-dom";
+import { DeleteButton } from "./DeleteButton.tsx";
 
 type ProductTableProps = {
     products: Product[];
     onEdit: (product: Product) => void;
-    onDelete: (id: number) => void;
+    onDelete: (id: string) => void;
+};
+
+const formatNumber = (value: number | undefined, decimals = 2) => {
+    if (value === undefined || isNaN(value)) return 'N/A';
+    return value.toFixed(decimals);
 };
 
 export const ProductTable = ({ products, onEdit, onDelete }: ProductTableProps) => {
@@ -24,15 +31,21 @@ export const ProductTable = ({ products, onEdit, onDelete }: ProductTableProps) 
                 {products.map(product => (
                     <tr key={product.id}>
                         <td>
-                            <img
-                                src={product.image}
-                                alt={product.title}
-                                className="product-thumbnail"
-                            />
+                            <Link to={`/products/${product.id}`}>
+                                <img
+                                    src={product.image}
+                                    alt={product.title}
+                                    className="product-thumbnail"
+                                />
+                            </Link>
                         </td>
-                        <td>{product.title}</td>
-                        <td>${product.price.toFixed(2)}</td>
-                        <td>{product.stock}</td>
+                        <td>
+                            <Link to={`/products/${product.id}`}>
+                                {product.title}
+                            </Link>
+                        </td>
+                        <td>${formatNumber(product.price)}</td>
+                        <td>{formatNumber(product.stock, 0)}</td>
                         <td>{product.category}</td>
                         <td className="actions">
                             <button
@@ -41,12 +54,10 @@ export const ProductTable = ({ products, onEdit, onDelete }: ProductTableProps) 
                             >
                                 Edit
                             </button>
-                            <button
-                                onClick={() => onDelete(product.id)}
+                            <DeleteButton
+                                onDelete={() => onDelete(product.id)}
                                 className="delete-button"
-                            >
-                                Delete
-                            </button>
+                            />
                         </td>
                     </tr>
                 ))}

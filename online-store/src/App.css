@@ -1413,6 +1413,14 @@ border-color: var(--border-color);
   border-radius: var(--border-radius-sm);
   cursor: pointer;
 }
+.clear-image-button {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--danger);
+  color: var(--white);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+ }
 
 /* Product Table */
 .table-container {
@@ -1422,6 +1430,7 @@ border-color: var(--border-color);
 .product-table {
   width: 100%;
   border-collapse: collapse;
+  background: var(--form-bg);
 }
 
 .product-table th,
