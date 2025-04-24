@@ -1,34 +1,38 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
-import { ProductDetails } from './pages/ProductDetails';
+import { Products } from './pages/Products';
 import { Cart } from './pages/Cart';
-import { Checkout } from './pages/Checkout';
 import { Orders } from './pages/Orders';
 import { Admin } from './pages/Admin';
-import './App.css';
-import {ReactNode} from "react";
-import {Products} from "./pages/Products.tsx";
-import {AdminRoute} from "./components/AdminRoute.tsx";
+import { ProductDetails } from "./pages/ProductDetails";
+import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './components/ThemeProvider'; // Import ThemeProvider
 
-export default function App() {
-    return (
+function App() {
+  return (
+    <ThemeProvider> {/* Wrap everything in ThemeProvider */}
+      <AuthProvider>
         <Router>
+          <div id="root">
             <Navbar />
-            <Routes>
-                <Route path="/" element={<Home /> as ReactNode} />
-                <Route path="/product/:id" element={<ProductDetails /> as ReactNode} />
-                <Route path="/cart" element={<Cart /> as ReactNode} />
-                <Route path="/checkout" element={<Checkout /> as ReactNode} />
-                <Route path="/orders" element={<Orders /> as ReactNode} />
-                <Route path="/admin" element={
- <AdminRoute>
- <Admin />
- </AdminRoute>
-} />                <Route path="/products" element={<Products />} />
-            </Routes>
+            <main className="container">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/products/:id" element={<ProductDetails />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/admin" element={<Admin />} />
+              </Routes>
+            </main>
             <Footer />
+          </div>
         </Router>
-    );
+      </AuthProvider>
+    </ThemeProvider>
+  );
 }
+
+export default App;
